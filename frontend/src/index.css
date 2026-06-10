@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-800;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  .tab-btn {
+    @apply px-5 py-3 text-sm font-medium transition-all duration-200 border-b-2;
+  }
+  .tab-btn-active {
+    @apply border-blue-500 text-blue-600;
+  }
+  .tab-btn-inactive {
+    @apply border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300;
+  }
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-slate-100 p-6;
+  }
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-blue-700;
+  }
+  .section-title {
+    @apply text-2xl font-bold text-slate-800 mb-6 pb-3 border-b border-slate-200;
+  }
+}
+
+/* Chat bubble animations */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.chat-bubble {
+  animation: fadeInUp 0.2s ease-out;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }

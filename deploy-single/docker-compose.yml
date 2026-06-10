@@ -1,0 +1,15 @@
+# 本地測試整合版用。build context 是專案根目錄（上一層），
+# 所以才看得到 frontend/ backend/ assets/。
+# 用法（從專案根目錄）：
+#   docker compose -f deploy-single/docker-compose.yml up --build
+# 開 http://localhost:8080
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: deploy-single/Dockerfile
+    ports:
+      - "8080:8000"
+    env_file:
+      - ../backend/.env
+    restart: unless-stopped
