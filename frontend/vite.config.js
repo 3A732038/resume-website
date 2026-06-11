@@ -3,6 +3,11 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    // 生產 build 設定：後端把 /assets 留給圖片/PDF，
+    // 這裡把前端 build 產物改放 /build-assets，避免 URL 路徑撞名
+    assetsDir: 'build-assets',
+  },
   server: {
     host: '0.0.0.0',
     port: 3000,
