@@ -51,6 +51,7 @@ async def chat(req: ChatRequest):
     return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
-@app.get("/health")
+# 同時接受 GET 與 HEAD：UptimeRobot 等監控服務預設用 HEAD 檢查
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health():
     return {"status": "ok"}
