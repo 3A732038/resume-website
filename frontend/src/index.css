@@ -30,6 +30,16 @@
   }
 }
 
+/* 浮動聊天視窗彈出動畫 */
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.chat-widget-panel {
+  animation: popIn 0.18s ease-out;
+  transform-origin: bottom right;
+}
+
 /* Chat bubble animations */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(8px); }
