@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import ResumeSection from './components/ResumeSection'
 import ProjectsSection from './components/ProjectsSection'
+import ThesisSection from './components/ThesisSection'
 import ChatWidget from './components/ChatWidget'
 
 const TABS = [
   { id: 'resume', label: '履歷資料' },
   { id: 'projects', label: '專案展示' },
+  { id: 'thesis', label: '論文研究' },
 ]
 
 export default function App() {
@@ -72,6 +74,7 @@ export default function App() {
       <main className="max-w-5xl mx-auto px-6 py-10">
         {activeTab === 'resume' && <ResumeSection data={resumeData} />}
         {activeTab === 'projects' && <ProjectsSection projects={projects} />}
+        {activeTab === 'thesis' && <ThesisSection data={resumeData} />}
       </main>
 
       <footer className="text-center py-6 text-slate-400 text-sm border-t border-slate-200">
