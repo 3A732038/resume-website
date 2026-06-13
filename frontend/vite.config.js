@@ -11,6 +11,10 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 3000,
+    watch: {
+      // Windows + Docker volume 掛載收不到檔案變更事件，改用輪詢才能熱重載
+      usePolling: true,
+    },
     proxy: {
       '/api': {
         target: 'http://backend:8000',
