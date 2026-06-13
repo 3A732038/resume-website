@@ -1,8 +1,11 @@
-version: '3.8'
+# 固定 project 名為 resume-dev，與生產端 resume-prod 隔離，
+# 避免兩邊共用預設 project 名導致 image / 容器互相覆蓋。
+name: resume-dev
 
 services:
   backend:
     build: ./backend
+    container_name: backend
     volumes:
       - ./backend:/app
       - ./assets:/app/assets:ro
@@ -12,10 +15,14 @@ services:
 
   frontend:
     build: ./frontend
+    container_name: frontend
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/index.html:/app/index.html
-    depends_on: 
+      # 把 package.json 掛出來：在容器內 npm install 後，主機這份會即時同步，
+      # 方便查看裝了哪些套件，也讓 git / Render build 拿到最新依賴清單。
+      - ./frontend/package.json:/app/package.json
+    depends_on:
       - backend
     ports:
       - "3000:3000"

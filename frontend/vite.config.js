@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   build: {
     // 生產 build 設定：後端把 /assets 留給圖片/PDF，
     // 這裡把前端 build 產物改放 /build-assets，避免 URL 路徑撞名

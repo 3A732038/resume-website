@@ -1,4 +1,28 @@
 import { useState, useRef, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
+
+// Tailwind 的 preflight 會清掉 markdown 元素的預設樣式，
+// 這裡替每個元素補上對應的 class，讓 AI 回覆的標題/清單/粗體等正常顯示。
+const mdComponents = {
+  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+  ul: ({ children }) => <ul className="list-disc pl-4 mb-2 last:mb-0 space-y-0.5">{children}</ul>,
+  ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 last:mb-0 space-y-0.5">{children}</ol>,
+  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+  h1: ({ children }) => <h1 className="text-base font-bold mt-1 mb-2">{children}</h1>,
+  h2: ({ children }) => <h2 className="text-sm font-bold mt-1 mb-1.5">{children}</h2>,
+  h3: ({ children }) => <h3 className="text-sm font-semibold mt-1 mb-1">{children}</h3>,
+  strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+  em: ({ children }) => <em className="italic">{children}</em>,
+  a: ({ href, children }) => (
+    <a href={href} target="_blank" rel="noreferrer" className="text-blue-600 underline">{children}</a>
+  ),
+  code: ({ children }) => (
+    <code className="bg-slate-100 text-slate-800 rounded px-1 py-0.5 text-xs font-mono">{children}</code>
+  ),
+  pre: ({ children }) => (
+    <pre className="bg-slate-100 rounded-lg p-2 my-2 overflow-x-auto text-xs [&_code]:bg-transparent [&_code]:p-0">{children}</pre>
+  ),
+}
 
 const QUICK_QUESTIONS = [
   '請自我介紹一下（請詳細介紹）',
@@ -20,13 +44,17 @@ function Message({ role, text }) {
         {isUser ? '我' : 'AI'}
       </div>
       <div
-        className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap ${
+        className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
           isUser
-            ? 'bg-blue-600 text-white rounded-tr-sm'
+            ? 'bg-blue-600 text-white rounded-tr-sm whitespace-pre-wrap'
             : 'bg-white text-slate-700 border border-slate-200 rounded-tl-sm shadow-sm'
         }`}
       >
-        {text || <span className="opacity-50">▌</span>}
+        {isUser
+          ? (text || <span className="opacity-50">▌</span>)
+          : (text
+              ? <ReactMarkdown components={mdComponents}>{text}</ReactMarkdown>
+              : <span className="opacity-50">▌</span>)}
       </div>
     </div>
   )

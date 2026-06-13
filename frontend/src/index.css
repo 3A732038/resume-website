@@ -1,6 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+/* v4 用 CSS-first 設定，取代舊的 tailwind.config.js。
+   自訂顏色寫成 --color-* 變數後，就能用 bg-primary-600、text-primary-500 等 class。 */
+@theme {
+  --color-primary-50: #eff6ff;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-900: #1e3a5f;
+}
 
 @layer base {
   body {

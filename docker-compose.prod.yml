@@ -1,4 +1,6 @@
-version: '3.8'
+# 固定 project 名為 resume-prod，與開發端 resume-dev 隔離，
+# 避免兩邊共用預設 project 名導致 image / 容器互相覆蓋。
+name: resume-prod
 
 services:
   backend:
@@ -16,7 +18,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
     ports:
-      - "80:80"
+      # 本地 prod 對外用 777，避免跟 dev 的 80 衝突，兩邊可同時跑
+      - "777:80"
     depends_on:
       - backend
     restart: unless-stopped
