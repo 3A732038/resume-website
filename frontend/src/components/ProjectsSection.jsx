@@ -126,7 +126,7 @@ function LicenseProject({ project }) {
 function MiscProject({ project }) {
   return (
     <div className="space-y-4">
-      <p className="text-slate-600 text-sm leading-relaxed">{project.motivation}</p>
+      <p className="text-slate-600 text-sm leading-relaxed"><strong>動機與目的：</strong>{project.motivation}</p>
       <div className="space-y-4">
         {project.sub_projects?.map((sub, i) => (
           <div key={i} className="pl-4 border-l-2 border-blue-200">
@@ -166,11 +166,18 @@ function ProjectCard({ project }) {
             <strong>動機與目的：</strong>{project.motivation}
           </p>
           <p className="text-slate-600 text-sm leading-relaxed">{project.description}</p>
-          {project.github && (
-            <a href={project.github} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
-              🐙 GitHub
-            </a>
-          )}
+          <div className="flex gap-4">
+            {project.doc_pdf && (
+              <a href={project.doc_pdf} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
+                📄 相關文件
+              </a>
+            )}
+            {project.github && (
+              <a href={project.github} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
+                🐙 GitHub
+              </a>
+            )}
+          </div>
         </div>
       )
     }
