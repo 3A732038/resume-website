@@ -1,5 +1,6 @@
-# 固定 project 名為 resume-prod，與開發端 resume-dev 隔離，
-# 避免兩邊共用預設 project 名導致 image / 容器互相覆蓋。
+# 固定 project 名為 resume-prod，與開發端 resume-dev 隔離。
+# prod 接入共用 nginx（../reverse-proxy）：前端 build 成靜態檔丟共享 volume，
+# 後端接 web 網路由共用 nginx 代理。前後端依然分離。
 name: resume-prod
 
 services:
@@ -11,15 +12,32 @@ services:
       - ./assets:/app/assets:ro
     env_file:
       - ./backend/.env
+    networks:
+      default: {}
+      # 接到共用反向代理網路，並給一個全域唯一別名，供共用 nginx 代理。
+      # aliases 是跨 compose 的 DNS 名稱：container_name 只在同一個 compose 內有效，
+      # 外部的 nginx-proxy compose 無法用 container_name 找到這個容器，
+      # 必須透過 aliases 在 web 網路裡註冊名稱才能被解析。
+      web:
+        aliases:
+          - resume-prod-backend
     restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.prod
-    ports:
-      # 本地 prod 對外用 777，避免跟 dev 的 80 衝突，兩邊可同時跑
-      - "777:80"
-    depends_on:
-      - backend
-    restart: unless-stopped
+    volumes:
+      # build 產物丟進共享 volume，給共用 nginx 直接 serve
+      - resume-prod-static:/output
+    # build-only：跑完 cp 就結束，不常駐、不對外開 port、不需 restart
+
+networks:
+  default: {}
+  web:
+    external: true
+
+volumes:
+  # 存放 prod build 出來的靜態檔，與 reverse-proxy 共用（external）
+  resume-prod-static:
+    external: true
