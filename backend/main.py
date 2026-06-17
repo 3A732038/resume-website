@@ -2,7 +2,7 @@ import asyncio
 import json
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -10,6 +10,8 @@ from pydantic import BaseModel
 
 from chat_service import chat_stream
 from resume_data import PROJECTS, RESUME
+from visit_logger import ENABLED as VISIT_LOG_ENABLED
+from visit_logger import client_ip, record_visit
 
 app = FastAPI(title="Resume API")
 
@@ -19,6 +21,27 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+# 訪客記錄：只在設定了 Supabase 環境變數時啟用。記錄「打開網頁首頁」這個動作，
+# 用背景任務寫入，完全不阻塞、不影響正常回應。
+@app.middleware("http")
+async def log_visit(request: Request, call_next):
+    response = await call_next(request)
+    if (
+        VISIT_LOG_ENABLED
+        and request.method == "GET"
+        and request.url.path in ("/", "/index.html")
+    ):
+        asyncio.create_task(
+            record_visit(
+                ip=client_ip(request),
+                user_agent=request.headers.get("user-agent", ""),
+                path=request.url.path,
+                referer=request.headers.get("referer", ""),
+            )
+        )
+    return response
 
 assets_path = Path("/app/assets")
 if assets_path.exists():
