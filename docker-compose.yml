@@ -11,6 +11,15 @@ services:
       - ./assets:/app/assets:ro
     env_file:
       - ./backend/.env
+    networks:
+      default: {}
+      # 接到共用反向代理網路，並給一個全域唯一別名，供共用 nginx 代理。
+      # aliases 是跨 compose 的 DNS 名稱：container_name 只在同一個 compose 內有效，
+      # 外部的 nginx-proxy compose 無法用 container_name 找到這個容器，
+      # 必須透過 aliases 在 web 網路裡註冊名稱才能被解析。
+      web:
+        aliases:
+          - resume-dev-backend
     restart: unless-stopped
 
   frontend:
@@ -24,18 +33,21 @@ services:
       - ./frontend/package.json:/app/package.json
     depends_on:
       - backend
+    networks:
+      default: {}
+      # 同上，給 nginx-proxy 跨 compose 解析前端容器用
+      web:
+        aliases:
+          - resume-dev-frontend
+    # 保留 3000 對外，方便需要時直連 Vite 除錯；日常走 http://resume-dev.localhost
     ports:
       - "3000:3000"
     restart: unless-stopped
 
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
-    depends_on:
-      - frontend
-      - backend
-    restart: unless-stopped
+# 不再需要專案內的 nginx —— 改由 ../reverse-proxy 的共用 nginx 統一代理
+
+networks:
+  default: {}
+  # 共用反向代理網路（由 reverse-proxy 那邊先建立：docker network create web）
+  web:
+    external: true
