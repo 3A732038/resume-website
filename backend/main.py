@@ -23,26 +23,6 @@ app.add_middleware(
 )
 
 
-# 訪客記錄：只在設定了 Supabase 環境變數時啟用。記錄「打開網頁首頁」這個動作，
-# 用背景任務寫入，完全不阻塞、不影響正常回應。
-@app.middleware("http")
-async def log_visit(request: Request, call_next):
-    response = await call_next(request)
-    if (
-        VISIT_LOG_ENABLED
-        and request.method == "GET"
-        and request.url.path in ("/", "/index.html")
-    ):
-        asyncio.create_task(
-            record_visit(
-                ip=client_ip(request),
-                user_agent=request.headers.get("user-agent", ""),
-                path=request.url.path,
-                referer=request.headers.get("referer", ""),
-            )
-        )
-    return response
-
 assets_path = Path("/app/assets")
 if assets_path.exists():
     app.mount("/assets", StaticFiles(directory=str(assets_path)), name="assets")
@@ -56,6 +36,29 @@ def get_resume():
 @app.get("/api/projects")
 def get_projects():
     return PROJECTS
+
+
+class VisitBeacon(BaseModel):
+    # document.referrer：使用者從哪個網站連過來（例如 104、Google）。
+    # 只有最初載入頁面的請求才帶得到外部來源，所以交給前端 JS 回報。
+    referrer: str = ""
+    path: str = "/"
+
+
+@app.post("/api/visit")
+async def log_visit(beacon: VisitBeacon, request: Request):
+    """前端載入時呼叫一次，記錄一筆訪問。背景寫入，不阻塞。"""
+    if VISIT_LOG_ENABLED:
+        asyncio.create_task(
+            record_visit(
+                ip=client_ip(request),
+                user_agent=request.headers.get("user-agent", ""),
+                path=beacon.path or "/",
+                # 優先用前端送來的 document.referrer；沒有就退回 Referer 標頭
+                referer=beacon.referrer or request.headers.get("referer", ""),
+            )
+        )
+    return {"ok": True}
 
 
 class ChatRequest(BaseModel):

@@ -23,12 +23,16 @@ _PRIVATE_PREFIXES = ("127.", "10.", "192.168.", "172.16.", "::1")
 def client_ip(request) -> str:
     """取得真實訪客 IP。
 
-    部署在 Render 這類平台時，後端前面有反向代理，request.client.host 會是
-    代理的 IP，真正的訪客 IP 在 X-Forwarded-For 標頭的第一個。
+    後端前面有反向代理時，request.client.host 只是代理的 IP，真正的訪客 IP
+    在標頭裡。不同代理用不同標頭：Render 用 X-Forwarded-For，本專案的
+    reverse-proxy 設的是 X-Real-IP，所以兩個都看。
     """
     xff = request.headers.get("x-forwarded-for", "")
     if xff:
         return xff.split(",")[0].strip()
+    xri = request.headers.get("x-real-ip", "")
+    if xri:
+        return xri
     return request.client.host if request.client else ""
 
 

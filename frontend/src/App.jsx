@@ -18,6 +18,13 @@ export default function App() {
   useEffect(() => {
     fetch('/api/resume').then(r => r.json()).then(setResumeData)
     fetch('/api/projects').then(r => r.json()).then(setProjects)
+    // 記錄一筆訪問：document.referrer 是使用者的來源網站（例如從 104 點進來）。
+    // 失敗也無所謂，不影響頁面。
+    fetch('/api/visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ referrer: document.referrer, path: location.pathname }),
+    }).catch(() => {})
   }, [])
 
   return (
