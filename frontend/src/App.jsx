@@ -68,7 +68,7 @@ export default function App() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`tab-btn ${activeTab === tab.id ? 'tab-btn-active text-white border-blue-400' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-500'}`}
+                className={`tab-btn ${activeTab === tab.id ? 'tab-btn-active' : 'tab-btn-inactive'}`}
               >
                 {tab.label}
               </button>

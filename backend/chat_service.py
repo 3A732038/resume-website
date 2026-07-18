@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from openai import OpenAI, AsyncOpenAI
+from openai import AsyncOpenAI
 from sklearn.metrics.pairwise import cosine_similarity
 from resume_data import RAG_DOCS
 
@@ -8,17 +8,8 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 CHAT_MODEL = "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free"
 EMBED_MODEL = "nvidia/llama-nemotron-embed-vl-1b-v2:free"
 
-_client: OpenAI | None = None
 _async_client: AsyncOpenAI | None = None
 _doc_vectors: np.ndarray | None = None
-
-
-def get_client() -> OpenAI:
-    global _client
-    if _client is None:
-        api_key = os.environ.get("OPENROUTER_API_KEY", "")
-        _client = OpenAI(base_url=OPENROUTER_BASE_URL, api_key=api_key or "no-key")
-    return _client
 
 
 def get_async_client() -> AsyncOpenAI:
@@ -29,9 +20,9 @@ def get_async_client() -> AsyncOpenAI:
     return _async_client
 
 
-def get_embedding(texts: list[str]) -> np.ndarray:
-    client = get_client()
-    resp = client.embeddings.create(
+async def get_embedding(texts: list[str]) -> np.ndarray:
+    client = get_async_client()
+    resp = await client.embeddings.create(
         model=EMBED_MODEL,
         input=[{"content": [{"type": "text", "text": t}]} for t in texts],
         encoding_format="float",
@@ -41,14 +32,14 @@ def get_embedding(texts: list[str]) -> np.ndarray:
     return vecs / np.where(norms == 0, 1, norms)
 
 
-def get_doc_vectors() -> np.ndarray:
+async def get_doc_vectors() -> np.ndarray:
     global _doc_vectors
     if _doc_vectors is None:
-        _doc_vectors = get_embedding(RAG_DOCS)
+        _doc_vectors = await get_embedding(RAG_DOCS)
     return _doc_vectors
 
 
-def retrieve(query: str, k: int = 3) -> list[str]:
+async def retrieve(query: str, k: int = 3) -> list[str]:
     api_key = os.environ.get("OPENROUTER_API_KEY", "")
     if not api_key:
         from sklearn.feature_extraction.text import TfidfVectorizer
@@ -59,8 +50,8 @@ def retrieve(query: str, k: int = 3) -> list[str]:
         top_idx = np.argsort(scores)[::-1][:k]
         return [RAG_DOCS[i] for i in top_idx if scores[i] > 0.01] or [RAG_DOCS[0]]
 
-    q_vec = get_embedding([query])
-    scores = cosine_similarity(q_vec, get_doc_vectors())[0]
+    q_vec = await get_embedding([query])
+    scores = cosine_similarity(q_vec, await get_doc_vectors())[0]
     top_idx = np.argsort(scores)[::-1][:k]
     return [RAG_DOCS[i] for i in top_idx if scores[i] > 0.1] or [RAG_DOCS[0]]
 
@@ -80,7 +71,7 @@ async def chat_stream(message: str, history: list[dict]):
     import time
 
     t0 = time.time()
-    context_docs = retrieve(message)
+    context_docs = await retrieve(message)
     print(f"[timing] embedding+retrieve: {time.time() - t0:.2f}s", flush=True)
 
     context = "\n\n".join(context_docs)

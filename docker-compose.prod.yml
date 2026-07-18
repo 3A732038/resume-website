@@ -28,9 +28,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
     volumes:
-      # build 產物丟進共享 volume，給共用 nginx 直接 serve
+      # build 產物丟進共享 volume，給共用 nginx 直接 serve 
       - resume-prod-static:/output
-    # build-only：跑完 cp 就結束，不常駐、不對外開 port、不需 restart
+    # build-only：跑完 cp 就結束，不常駐、不對外開 port、不需 restart，因此不需要啟動該服務，僅用於產生靜態檔。
 
 networks:
   default: {}
