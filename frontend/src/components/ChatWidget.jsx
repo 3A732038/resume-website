@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import ReactMarkdown from 'react-markdown'
+import { API_BASE } from '../config'
 
 // Tailwind 的 preflight 會清掉 markdown 元素的預設樣式，
 // 這裡替每個元素補上對應的 class，讓 AI 回覆的標題/清單/粗體等正常顯示。
@@ -104,7 +105,7 @@ export default function ChatWidget() {
     setMessages(prev => [...prev, { role: 'user', text: userMsg }, { role: 'assistant', text: '' }])
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg, history }),

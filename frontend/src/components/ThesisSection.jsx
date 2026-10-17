@@ -1,3 +1,5 @@
+import { assetUrl } from '../config'
+
 function MetricCard({ metric }) {
   return (
     <div className="card text-center py-5">
@@ -48,12 +50,12 @@ export default function ThesisSection({ data }) {
         </div>
         <div className="flex gap-4 mt-4">
           {thesis.proof_pdf && (
-            <a href={thesis.proof_pdf} target="_blank" rel="noreferrer" className="text-sm text-blue-300 hover:text-white transition-colors">
+            <a href={assetUrl(thesis.proof_pdf)} target="_blank" rel="noreferrer" className="text-sm text-blue-300 hover:text-white transition-colors">
               📄 研討會論文
             </a>
           )}
           {thesis.proof_image && (
-            <a href={thesis.proof_image} target="_blank" rel="noreferrer" className="text-sm text-blue-300 hover:text-white transition-colors">
+            <a href={assetUrl(thesis.proof_image)} target="_blank" rel="noreferrer" className="text-sm text-blue-300 hover:text-white transition-colors">
               🏅 發表證明
             </a>
           )}

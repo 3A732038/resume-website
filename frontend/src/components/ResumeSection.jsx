@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { assetUrl } from '../config'
 
 function SkillBadge({ skill }) {
   return (
@@ -94,7 +95,7 @@ function ExperienceCard({ exp }) {
         <div className="flex items-center gap-2 flex-shrink-0">
           {exp.proof_image && (
             <a
-              href={exp.proof_image}
+              href={assetUrl(exp.proof_image)}
               target="_blank"
               rel="noreferrer"
               className="text-xs text-blue-600 hover:underline"
@@ -104,7 +105,7 @@ function ExperienceCard({ exp }) {
           )}
           {exp.proof_pdf && (
             <a
-              href={exp.proof_pdf}
+              href={assetUrl(exp.proof_pdf)}
               target="_blank"
               rel="noreferrer"
               className="text-xs text-blue-600 hover:underline"
@@ -152,7 +153,7 @@ function CertRow({ cert }) {
         <tr className="bg-slate-50">
           <td colSpan={3} className="px-4 pb-4">
             <img
-              src={cert.image}
+              src={assetUrl(cert.image)}
               alt={cert.name}
               className="max-h-48 rounded-lg border border-slate-200 object-contain"
             />

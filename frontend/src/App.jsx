@@ -3,6 +3,7 @@ import ResumeSection from './components/ResumeSection'
 import ProjectsSection from './components/ProjectsSection'
 import ThesisSection from './components/ThesisSection'
 import ChatWidget from './components/ChatWidget'
+import { API_BASE, assetUrl } from './config'
 
 const TABS = [
   { id: 'resume', label: '履歷資料' },
@@ -16,11 +17,11 @@ export default function App() {
   const [projects, setProjects] = useState([])
 
   useEffect(() => {
-    fetch('/api/resume').then(r => r.json()).then(setResumeData)
-    fetch('/api/projects').then(r => r.json()).then(setProjects)
+    fetch(`${API_BASE}/api/resume`).then(r => r.json()).then(setResumeData)
+    fetch(`${API_BASE}/api/projects`).then(r => r.json()).then(setProjects)
     // 記錄一筆訪問：document.referrer 是使用者的來源網站（例如從 104 點進來）。
     // 失敗也無所謂，不影響頁面。
-    fetch('/api/visit', {
+    fetch(`${API_BASE}/api/visit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ referrer: document.referrer, path: location.pathname }),
@@ -33,7 +34,7 @@ export default function App() {
       <header className="bg-gradient-to-br from-slate-800 to-slate-900 text-white">
         <div className="max-w-5xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center gap-8">
           <img
-            src={encodeURI("/assets/頭貼.jpg")}
+            src={encodeURI(assetUrl("/assets/頭貼.jpg"))}
             alt="巫宇哲"
             className="w-32 h-32 rounded-full object-cover ring-4 ring-blue-400 ring-offset-4 ring-offset-slate-800 flex-shrink-0"
             onError={e => { e.target.style.display = 'none' }}

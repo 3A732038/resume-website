@@ -16,15 +16,5 @@ export default defineConfig({
       // Windows + Docker volume 掛載收不到檔案變更事件，改用輪詢才能熱重載
       usePolling: true,
     },
-    proxy: {
-      '/api': {
-        target: 'http://backend:8000',
-        changeOrigin: true,
-      },
-      '/assets': {
-        target: 'http://backend:8000',
-        changeOrigin: true,
-      },
-    },
   },
 })

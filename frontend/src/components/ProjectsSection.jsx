@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { assetUrl } from '../config'
 
 function TechBadge({ tech }) {
   return (
@@ -20,7 +21,7 @@ function AttendanceProject({ project }) {
           {project.images.map((img, i) => (
             <div key={i}>
               <p className="text-xs text-slate-500 mb-1">{project.image_captions?.[i]}</p>
-              <img src={img} alt={project.image_captions?.[i]} className="rounded-lg border border-slate-200 w-full object-cover" />
+              <img src={assetUrl(img)} alt={project.image_captions?.[i]} className="rounded-lg border border-slate-200 w-full object-cover" />
             </div>
           ))}
         </div>
@@ -61,22 +62,22 @@ function EETProject({ project }) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <p className="text-xs text-slate-500 mb-1 font-medium">原始 X-ray 影像</p>
-              <img src={ex.init} alt="init" className="rounded-lg border border-slate-200 w-full object-cover" />
+              <img src={assetUrl(ex.init)} alt="init" className="rounded-lg border border-slate-200 w-full object-cover" />
             </div>
             <div>
               <p className="text-xs text-slate-500 mb-1 font-medium">預測的 Mask</p>
-              <img src={ex.pred} alt="pred" className="rounded-lg border border-slate-200 w-full object-cover" />
+              <img src={assetUrl(ex.pred)} alt="pred" className="rounded-lg border border-slate-200 w-full object-cover" />
             </div>
             <div>
               <p className="text-xs text-slate-500 mb-1 font-medium">真實 Mask</p>
-              <img src={ex.label_img} alt="label" className="rounded-lg border border-slate-200 w-full object-cover" />
+              <img src={assetUrl(ex.label_img)} alt="label" className="rounded-lg border border-slate-200 w-full object-cover" />
             </div>
           </div>
         )}
       </div>
       <div className="flex gap-4">
         {project.doc_pdf && (
-          <a href={project.doc_pdf} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
+          <a href={assetUrl(project.doc_pdf)} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
             📄 成果文件
           </a>
         )}
@@ -101,7 +102,7 @@ function LicenseProject({ project }) {
         <div>
           <p className="text-xs text-slate-500 mb-2">車牌辨識成果影片</p>
           <video
-            src={project.video_result}
+            src={assetUrl(project.video_result)}
             controls
             className="rounded-lg border border-slate-200 w-full max-w-lg"
           />
@@ -109,7 +110,7 @@ function LicenseProject({ project }) {
       )}
       <div className="flex gap-4">
         {project.doc_pdf && (
-          <a href={project.doc_pdf} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
+          <a href={assetUrl(project.doc_pdf)} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
             📄 成果文件
           </a>
         )}
@@ -139,7 +140,7 @@ function MiscProject({ project }) {
                 </a>
               )}
               {sub.doc_pdf && (
-                <a href={sub.doc_pdf} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
+                <a href={assetUrl(sub.doc_pdf)} target="_blank" rel="noreferrer" className="text-xs text-blue-600 hover:underline">
                   📄 文件
                 </a>
               )}
@@ -168,7 +169,7 @@ function ProjectCard({ project }) {
           <p className="text-slate-600 text-sm leading-relaxed">{project.description}</p>
           <div className="flex gap-4">
             {project.doc_pdf && (
-              <a href={project.doc_pdf} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
+              <a href={assetUrl(project.doc_pdf)} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline">
                 📄 相關文件
               </a>
             )}

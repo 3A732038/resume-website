@@ -11,15 +11,19 @@ services:
       - ./assets:/app/assets:ro
     env_file:
       - ./backend/.env
-    networks:
-      default: {}
-      # 接到共用反向代理網路，並給一個全域唯一別名，供共用 nginx 代理。
-      # aliases 是跨 compose 的 DNS 名稱：container_name 只在同一個 compose 內有效，
-      # 外部的 nginx-proxy compose 無法用 container_name 找到這個容器，
-      # 必須透過 aliases 在 web 網路裡註冊名稱才能被解析。
-      web:
-        aliases:
-          - resume-dev-backend
+    # 後端獨立對外，不再經由共用 nginx 代理，前端直接打這個 port。
+    ports:
+      - "8000:8000"
+    # 【改走共用 nginx 代理後端時啟用】加入共用網路 web 並註冊別名，
+    # nginx（reverse-proxy/conf.d/resume.conf）才能用 resume-dev-backend 解析到後端。
+    # 啟用時：取消下面註解、移除上面的 ports，並移除 frontend 的 volumes 裡
+    # ./frontend/.env:/app/.env 這行掛載（讓 VITE_API_URL 讀不到，API_BASE 才會是同源的 ''），
+    # 再重建前端（--force-recreate，單純 restart 不會套用 volumes 變更）。
+    # networks:
+    #   default: {}
+    #   web:
+    #     aliases:
+    #       - resume-dev-backend
     restart: unless-stopped
 
   frontend:
@@ -28,6 +32,10 @@ services:
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/index.html:/app/index.html
+      # public/ 底下的檔案（如 favicon）由 Vite dev 直接從這裡提供，掛載後新增/替換不需重新 build。
+      - ./frontend/public:/app/public
+      # 讓容器內的 Vite 讀得到 VITE_API_URL（沒掛的話容器內沒有 .env，API_BASE 會是 ''）。
+      - ./frontend/.env:/app/.env
       # 把 package.json 掛出來：在容器內 npm install 後，主機這份會即時同步，
       # 方便查看裝了哪些套件，也讓 git / Render build 拿到最新依賴清單。
       - ./frontend/package.json:/app/package.json
