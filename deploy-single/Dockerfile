@@ -4,6 +4,11 @@ WORKDIR /app/frontend
 COPY frontend/package.json ./
 RUN npm install
 COPY frontend/ ./
+# 單一部署的前後端同源，前端要用相對路徑（/api、/assets）呼叫後端，所以 VITE_API_URL 必須是空字串。
+# Vite 是在 build 時把 VITE_API_URL 寫死進 JS，且會讀 frontend/.env.production（COPY 會一併帶進來）；
+# 若它寫著 http://localhost:8001，build 出來的前端就會去連使用者自己電腦的 8001，頁面會一直「載入中」。
+# 環境變數的優先級高於 .env 檔，這裡先設成空字串，就不受任何 .env 檔影響。
+ENV VITE_API_URL=""
 RUN npm run build
 
 # ---- Stage 2: 後端 + 靜態檔 ----
